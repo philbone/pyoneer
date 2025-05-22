@@ -12,6 +12,9 @@ pygame.display.set_caption("Nave en Gravedad Cero")
 PIXEL = 5
 FPS = 60
 
+# Gravedad (puede ser Vector2(0, 0) en el espacio)
+GRAVEDAD = pygame.math.Vector2(0, 0.01)
+
 # Colores
 COLORES = {
     0: (0, 0, 0),           # fondo
@@ -93,6 +96,7 @@ corriendo = True
 
 # Bucle principal
 while corriendo:
+    vel += GRAVEDAD
     dt = reloj.tick(FPS)
     pantalla.fill((0, 0, 0))
 
@@ -131,15 +135,15 @@ while corriendo:
     dibujar_sprite(pantalla, nave, int(pos.x), int(pos.y), PIXEL, flip=hacia_izquierda)
 
     # Propulsión visual
-    if impulsando:
-        if direccion_fuego == "abajo":
-            dibujar_llama_animada(pantalla, int(pos.x + 24), int(pos.y - 3 * PIXEL), PIXEL)
-        elif direccion_fuego == "arriba":
+    if impulsando:        
+        if direccion_fuego == "arriba":
             dibujar_llama_animada(pantalla, int(pos.x + 24), int(pos.y + 12 * PIXEL), PIXEL)
         elif direccion_fuego == "izquierda":
             dibujar_llama_animada(pantalla, int(pos.x + 12 * PIXEL), int(pos.y + 5 * PIXEL), PIXEL)
         elif direccion_fuego == "derecha":
             dibujar_llama_animada(pantalla, int(pos.x - 3 * PIXEL), int(pos.y + 5 * PIXEL), PIXEL)
+        #elif direccion_fuego == "abajo":
+            #dibujar_llama_animada(pantalla, int(pos.x + 24), int(pos.y - 3 * PIXEL), PIXEL)
 
     # Generar partículas sutiles al soltar impulso (excepto si era hacia abajo)
     if not impulsando and impulsando_anteriormente and direccion_fuego != "abajo":
