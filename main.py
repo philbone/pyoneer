@@ -5,7 +5,7 @@ import random
 pygame.init()
 
 ANCHO, ALTO = 800, 600
-pantalla = pygame.display.set_mode((ANCHO, ALTO))
+pantalla = pygame.display.set_mode((ANCHO, ALTO), pygame.RESIZABLE)
 pygame.display.set_caption("Nave en Gravedad Cero")
 
 PIXEL = 5
