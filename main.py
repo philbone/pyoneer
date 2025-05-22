@@ -6,7 +6,7 @@ pygame.init()
 
 ANCHO, ALTO = 800, 600
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
-pygame.display.set_caption("Astronauta en Gravedad Cero")
+pygame.display.set_caption("Nave en Gravedad Cero")
 
 PIXEL = 5
 
@@ -20,22 +20,18 @@ COLORES = {
     5: (255, 100, 0),       # fuego
 }
 
-# Sprite astronauta (12x14)
-astronauta = [
+# Sprite nave (12x14)
+nave = [
     [0,0,0,3,3,3,3,3,3,0,0,0],
     [0,0,3,4,4,4,4,4,4,3,0,0],
     [0,3,4,4,4,4,4,4,4,4,3,0],
-    [0,3,4,4,1,1,1,1,4,4,3,0],
-    [0,3,4,4,1,1,1,1,4,4,3,0],
-    [0,3,4,4,4,4,4,4,4,4,3,0],
+    [3,4,4,4,4,1,1,1,1,1,4,3],
+    [3,4,4,4,4,1,1,1,1,1,4,3],
+    [3,2,4,4,4,4,4,4,4,4,4,3],
+    [3,2,2,2,4,4,4,4,4,4,2,3],
     [0,3,2,2,2,2,2,2,2,2,3,0],
-    [0,3,2,2,2,2,2,2,2,2,3,0],
-    [0,3,2,2,0,0,0,0,2,2,3,0],
-    [0,0,3,3,0,0,0,0,3,3,0,0],
-    [0,0,3,3,0,0,0,0,3,3,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,3,2,2,2,2,2,2,3,0,0],
+    [0,0,0,3,3,3,3,3,3,0,0,0],    
 ]
 
 # Varios patrones de llama
@@ -163,7 +159,7 @@ while corriendo:
     pos_y += vel_y
 
     # Dibujar personaje
-    dibujar_sprite(pantalla, astronauta, int(pos_x), int(pos_y), PIXEL, flip=hacia_izquierda)
+    dibujar_sprite(pantalla, nave, int(pos_x), int(pos_y), PIXEL, flip=hacia_izquierda)
 
     # Dibujar propulsión dependiendo de dirección
     if impulsando:
