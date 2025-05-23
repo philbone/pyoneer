@@ -7,12 +7,14 @@ BLOCK_TYPES = {
     '#': {
         "base_color": (70, 50, 30),
         "detail_colors": [(90, 70, 50), (100, 80, 60), (110, 85, 65)],
-        "detail_amount": 3
+        "detail_amount": 3,
+        "excavable": False
     },
     '@': {
         "base_color": (120, 90, 60),
         "detail_colors": [(140, 110, 80), (160, 130, 100)],
-        "detail_amount": 2
+        "detail_amount": 2,
+        "excavable": True
     }
 }
 
@@ -78,3 +80,10 @@ class Scene:
             if rect.colliderect(tile):
                 return True
         return False
+
+    def is_tile_excavable(self, rect):
+        for i, tile in enumerate(self.tiles):
+            if tile.colliderect(rect):
+                block_type = self.tile_types[i]
+                return BLOCK_TYPES[block_type]["excavable"]
+        return False  # si no hay colisión, no es excavable

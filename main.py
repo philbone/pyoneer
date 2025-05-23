@@ -6,7 +6,7 @@ from scene import Scene
 pygame.init()
 
 # Constantes generales
-SCREEN_WIDTH, SCREEN_HEIGHT = 1920, 1080
+SCREEN_WIDTH, SCREEN_HEIGHT = 1600, 600
 PIXEL = 5
 FPS = 60
 
@@ -44,7 +44,7 @@ ASTRONAUTA_SPRITE = [
     [3,2,2,2,4,4,4,4,4,4,2,3],
     [0,3,2,2,2,2,2,2,2,2,3,0],
     [0,0,3,2,2,2,2,2,2,3,0,0],
-    [0,0,0,3,3,3,3,3,3,0,0,0],    
+    [0,0,0,3,3,3,3,3,3,0,0,0],
 ]
 
 class PhysicsConfig:
@@ -198,6 +198,11 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_F3:
+                    self.debug_mode = not self.debug_mode
+                elif event.key == pygame.K_SPACE:
+                    self.attempt_excavate()
 
     def update(self):
         # Obtener vector de impulso del jugador
@@ -236,6 +241,21 @@ class Game:
         if self.player.thrusting:
             self.player.draw_thruster(self.screen)
         pygame.display.flip()
+
+    def attempt_excavate(self):
+        player_rect = self.player.get_rect()
+        for i, tile in enumerate(self.scene.tiles):
+            if tile.colliderect(player_rect):
+                block_type = self.scene.tile_types[i]
+                if self.scene.is_tile_excavable(tile):
+                    print(f"Excavado bloque {block_type} en {tile.topleft}")
+                    # Eliminar bloque
+                    self.scene.tiles.pop(i)
+                    self.scene.tile_textures.pop(i)
+                    self.scene.tile_types.pop(i)
+                else:
+                    print(f"No se puede excavar el bloque {block_type} en {tile.topleft}")
+                break
 
 if __name__ == "__main__":
     Game().run()
