@@ -1,6 +1,7 @@
 import pygame
 import random
 import sys
+from scene import Scene
 
 pygame.init()
 
@@ -97,11 +98,18 @@ class Player:
         self.friction = 0.98
         self.physics = physics_config  # ← guardar config física
 
+    def get_rect(self):
+        return pygame.Rect(
+            int(self.pos.x),
+            int(self.pos.y),
+            12 * PIXEL,  # ancho del personaje
+            10 * PIXEL   # alto del personaje
+        )
+
     def handle_input(self):
-        self.vel += self.physics.gravity
         keys = pygame.key.get_pressed()
         thrust = pygame.math.Vector2(0, 0)
-        self.thrusting = False  # ← Nuevo flag
+        self.thrusting = False
 
         if keys[pygame.K_LEFT]:
             thrust.x -= self.acc
@@ -122,14 +130,7 @@ class Player:
             self.thrust_dir = "down"
             self.thrusting = True
 
-        self.vel += thrust
-        if not self.thrusting:
-            self.vel *= self.friction
-        if self.vel.length() > self.max_speed:
-            self.vel.scale_to_length(self.max_speed)
-
-        self.pos += self.vel
-        return self.thrusting
+        return thrust
 
     def draw(self, surface):
         for y, row in enumerate(self.sprite):
@@ -171,6 +172,7 @@ class Player:
 
 class Game:
     def __init__(self):
+        self.scene = Scene()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Pyoneer")
         self.clock = pygame.time.Clock()
@@ -198,23 +200,40 @@ class Game:
                 self.running = False
 
     def update(self):
-        thrusting = self.player.handle_input()
+        # Obtener vector de impulso del jugador
+        thrust = self.player.handle_input()
+        self.player.vel += thrust
 
-        # Partículas al soltar impulso (excepto abajo)
-        if not thrusting and self.player.was_thrusting and self.player.thrust_dir != "down":
-            for _ in range(3):
-                self.particles.append(Particle(self.player.pos))
-        self.player.was_thrusting = thrusting
+        # Aplicar gravedad
+        self.player.vel += self.physics.gravity
 
-        # Actualizar partículas
-        self.particles = [p for p in self.particles if p.update()]
+        # Aplicar fricción si no hay impulso
+        if not self.player.thrusting:
+            self.player.vel *= self.player.friction
+
+        # Limitar velocidad máxima
+        if self.player.vel.length() > self.player.max_speed:
+            self.player.vel.scale_to_length(self.player.max_speed)
+
+        # Calcular posición tentativa
+        new_pos = self.player.pos + self.player.vel
+        future_rect = pygame.Rect(new_pos.x, new_pos.y, 12 * PIXEL, 10 * PIXEL)
+
+        if not self.scene.check_collision(future_rect):
+            self.player.pos = new_pos
+        else:
+            self.player.vel = pygame.math.Vector2(0, 0)
 
     def draw(self):
-        self.screen.fill((0, 0, 0))
+        self.screen.fill((0, 0, 0))             # LIMPIEZA COMPLETA del frame
+        self.scene.draw(self.screen, highlight_rect=self.player.get_rect())
+
+        # Traza el área de colisión del jugador
+        #pygame.draw.rect(self.screen, (0, 255, 0), self.player.get_rect(), 1)
         for p in self.particles:
             p.draw(self.screen)
         self.player.draw(self.screen)
-        if self.player.thrust_dir:
+        if self.player.thrusting:
             self.player.draw_thruster(self.screen)
         pygame.display.flip()
 
